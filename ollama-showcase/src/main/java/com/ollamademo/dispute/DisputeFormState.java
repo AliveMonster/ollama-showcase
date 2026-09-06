@@ -1,11 +1,13 @@
-
 package com.ollamademo.dispute;
 
+import java.util.List;
+
 public record DisputeFormState(
-        String disputeCategory,   // e.g., DUPLICATE_CHARGE, FRAUD, INCORRECT_AMOUNT
-        String transactionDate,   // ISO format YYYY-MM-DD
-        Double disputeAmount,     // Just the numeric value
-        String merchantName,
+        String disputeCategory,
+        String disputeSummary,
+        Double disputeAmount,
         Boolean merchantContacted,
-        String customerSummary    // AI-generated 1-sentence professional summary of the issue
+        String merchantResponse,
+        List<String> missingFields,
+        String recommendedRouting
 ) {}

@@ -21,11 +21,25 @@ public class CustomerDisputeController {
     public DisputeFormState autoFillForm(@RequestBody String customerNarrative) {
 
         String systemRules = """
-                You are an expert banking assistant. 
-                Extract the dispute details from the customer's unstructured narrative.
-                For the 'disputeCategory' field, you must strictly output one of the following: 
-                DUPLICATE_CHARGE, FRAUD, INCORRECT_AMOUNT, or OTHER.
-                If the user does not mention a specific data point (like the exact date), leave that field null.
+                You are a strict data extraction API. 
+                
+                BUSINESS RULES:
+                1. 'disputeCategory': [FRAUD, DUPLICATE_CHARGE, MERCHANDISE_ISSUE, INCORRECT_AMOUNT].
+                2. 'disputeAmount': Number only. No quotes, no currency symbols.
+                3. 'merchantContacted': Raw boolean true if the customer reached out to the store (even if the store refused to help). Raw boolean false if they explicitly did not.
+                4. 'missingFields': Array of strings. Add "disputeAmount" or "merchantContacted" if they are unknown.
+                5. 'recommendedRouting': MORE_QUESTIONS (if missing fields), ESCALATE_TO_AGENT (if FRAUD), DISPUTE_READY (otherwise).
+               
+                You MUST return ONLY valid JSON matching this exact structure and data types but values based on customer input:
+                {
+                    "disputeCategory": "MERCHANDISE_ISSUE",
+                    "disputeSummary": "Short summary of the issue.",
+                    "disputeAmount": 45.99,
+                    "merchantContacted": true,
+                    "merchantResponse": "They refused to issue a refund.",
+                    "missingFields": [],
+                    "recommendedRouting": "DISPUTE_READY"
+                }
                 """;
 
         return chatClient.prompt()
